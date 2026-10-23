@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart Quiz · AZ-900</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f4f7fb;--card:#fff;--ink:#14213d;--mut:#5b6785;--line:#dce3f0;--brand:#0f6cbd;--tint:#e8f2fc;--ok:#157347;--okbg:#e6f6ec;--bad:#b42318;--badbg:#fdeceb;--warn:#9a6700;--warnbg:#fff4d6}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1424;--card:#172038;--ink:#e8edf8;--mut:#9aa7c7;--line:#2a3558;--brand:#5aa9ee;--tint:#1b2c4a;--ok:#5fd08f;--okbg:#14301f;--bad:#ff8b7f;--badbg:#3a1a1a;--warn:#f2c25b;--warnbg:#3a2f12}}
+:root[data-theme="dark"]{--bg:#0e1424;--card:#172038;--ink:#e8edf8;--mut:#9aa7c7;--line:#2a3558;--brand:#5aa9ee;--tint:#1b2c4a;--ok:#5fd08f;--okbg:#14301f;--bad:#ff8b7f;--badbg:#3a1a1a;--warn:#f2c25b;--warnbg:#3a2f12}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.5rem;margin:0}h2{font-size:1.05rem;margin:0 0 10px}
+.sub{color:var(--mut);margin:2px 0 16px;font-size:.92rem}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:.9rem;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.chip{display:inline-block;background:var(--tint);color:var(--brand);border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:600}
+.hint{font-size:.8rem;color:var(--mut)}
+select,input,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px}
+label{display:block;font-size:.82rem;color:var(--mut);margin:10px 0 4px}
+.q{font-size:1.15rem;font-weight:600;margin:10px 0 14px}
+.opt{display:flex;gap:12px;width:100%;text-align:left;align-items:flex-start;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:9px;font:inherit;cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover:not(:disabled){border-color:var(--brand);background:var(--tint)}
+.opt b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--tint);color:var(--brand);display:grid;place-items:center;font-size:.8rem}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--okbg)}.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.fb{border-radius:12px;padding:14px 16px;margin-top:6px;border:1px solid var(--line)}
+.fb.ok{background:var(--okbg);border-color:var(--ok)}.fb.no{background:var(--badbg);border-color:var(--bad)}
+.fb h3{margin:0 0 6px;font-size:1rem}.fb ul{margin:8px 0 0;padding-left:18px}.fb li{margin:3px 0;font-size:.92rem}
+.btn{background:var(--brand);color:#fff;border:0;border-radius:10px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+.bar{height:9px;border-radius:9px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;background:var(--brand)}
+.trail{display:grid;grid-template-columns:28px 1fr 56px;gap:10px;align-items:center;margin:11px 0}
+.n{width:26px;height:26px;border-radius:50%;background:var(--tint);color:var(--brand);display:grid;place-items:center;font-size:.8rem;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:var(--tint);border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font-size:1.4rem}.stat span{font-size:.78rem;color:var(--mut)}
+.note{background:var(--warnbg);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:.85rem}
+[hidden]{display:none!important}
+</style></head><body>
+<div class="wrap">
+<h1>Smart Quiz</h1>
+<p class="sub">Microsoft AZ-900 practice with instant feedback and a reason behind every answer.</p>
+<div class="tabs" role="tablist">
+<button class="tab" data-v="quiz" aria-selected="true">Quiz</button>
+<button class="tab" data-v="dash" aria-selected="false">Progress</button>
+</div>
+
+<section id="quiz">
+<div class="card">
+<div class="row"><span class="chip" id="topic"></span>
+<select id="flt" style="width:auto" aria-label="Topic filter"></select></div>
+<div class="q" id="qtext"></div>
+<div id="opts"></div>
+<div class="fb" id="fb" hidden></div>
+<p style="margin:14px 0 0"><button class="btn" id="next" hidden>Next question →</button></p>
+</div>
+</section>
+
+<section id="dash" hidden>
+<div class="card"><h2>TRACK · your totals</h2><div class="stats" id="tot"></div></div>
+<div class="card"><h2>RANK + TRAIL · study order (weakest first)</h2><div id="trail"></div></div>
+<div class="card"><h2>HUNT · recurring misses</h2><div id="hunt"></div></div>
+<div class="card"><h2>HORIZON · exam readiness</h2><div id="hz"></div>
+<p><button class="btn ghost" id="reset">Reset progress</button></p></div>
+</section>
+
+</div>
+
+<script>
+const T=["Cloud Concepts","Architecture","Compute & Network","Storage","Identity & Security","Cost Management","Governance","Monitoring & Tools"];
+const BASE=[
+{t:0,q:"A retailer adds capacity for holiday sales and releases it afterwards. Which cloud benefit is this?",o:["High availability","Elasticity","Fault tolerance","Geo-distribution"],a:1,e:"Elasticity means resources scale out and in automatically to match demand.",w:["Keeps services running during failures, not scaling.","","Tolerates component faults, not demand changes.","Places services near users, not sized to demand."]},
+{t:0,q:"Under the shared responsibility model, what is the customer always responsible for, in every deployment type?",o:["Physical datacenter","Their data and identities","The hypervisor","Network cabling"],a:1,e:"Data, accounts and access stay with the customer for IaaS, PaaS, SaaS and on-premises alike.",w:["Microsoft runs the datacenter in cloud models.","","Microsoft manages hosts and hypervisors.","Physical networking is Microsoft’s job."]},
+{t:1,q:"Which is a logical container for grouping and managing Azure resources such as VMs and storage accounts?",o:["Resource group","Region pair","Availability zone","Management group"],a:0,e:"A resource group holds related resources so they share a lifecycle and can be managed together.",w:["","A region pair is two regions for disaster recovery.","A zone is a physical datacenter location.","A management group organises subscriptions, not resources."]},
+{t:1,q:"What protects an application from a datacenter failure inside a single Azure region?",o:["Availability zones","Resource locks","Subscriptions","Azure Advisor"],a:0,e:"Availability zones are separate datacenters in a region with independent power, cooling and networking.",w:["","Locks stop deletion or edits, not outages.","Subscriptions are billing and access boundaries.","Advisor gives recommendations; it does not add redundancy."]},
+{t:2,q:"Which service runs event-driven code without you managing servers?",o:["VM Scale Sets","Azure Functions","Azure Virtual Desktop","Azure Bastion"],a:1,e:"Azure Functions is serverless compute: code runs on a trigger and you pay per execution.",w:["Scale Sets still manage VMs.","","Virtual Desktop delivers remote desktops.","Bastion gives secure RDP/SSH access."]},
+{t:2,q:"Which feature filters inbound and outbound traffic to a subnet or VM by port, protocol and IP?",o:["Network security group","Azure Front Door","VPN Gateway","ExpressRoute"],a:0,e:"A network security group holds allow/deny rules based on source, destination, port and protocol.",w:["","Front Door is a global web entry point and CDN.","VPN Gateway links networks over the internet.","ExpressRoute is a private connection to Azure."]},
+{t:3,q:"Which storage service suits unstructured data such as images and video?",o:["Azure Files","Blob Storage","Queue Storage","Table Storage"],a:1,e:"Blob Storage stores massive amounts of unstructured objects.",w:["Files provides SMB file shares.","","Queues pass messages between components.","Tables hold NoSQL key-attribute data."]},
+{t:4,q:"Which capability requires users to prove identity with more than a password?",o:["Multifactor authentication","Azure Policy","Azure Firewall","Resource locks"],a:0,e:"MFA adds a second proof such as a phone prompt or code, greatly reducing account-takeover risk.",w:["","Policy enforces resource rules, not sign-in.","Firewall filters network traffic.","Locks protect resources from deletion."]},
+{t:4,q:"Which feature assigns permissions to users at a scope such as a subscription or resource group?",o:["Azure RBAC","Azure Policy","Resource locks","Tags"],a:0,e:"Role-based access control grants a role to a user at a scope, answering “who can do what”.",w:["","Policy controls what resources may look like.","Locks block deletes or edits for everyone.","Tags are labels for organising and billing."]},
+{t:5,q:"Which tool estimates the cost of a planned Azure workload before you deploy it?",o:["Pricing calculator","Cost Management","TCO calculator","Azure Advisor"],a:0,e:"The pricing calculator estimates monthly costs for the services you plan to use.",w:["","Cost Management analyses spending you already have.","TCO compares on-premises costs with Azure.","Advisor recommends optimisations after deployment."]},
+{t:6,q:"You must stop anyone accidentally deleting a production storage account. What do you apply?",o:["Resource lock (CanNotDelete)","Azure Policy","Tags","Reader role"],a:0,e:"A CanNotDelete lock blocks deletion even for users who otherwise have permission.",w:["","Policy audits or enforces rules; it is not a delete guard.","Tags carry metadata only.","Reader is read-only but does not protect against other owners."]},
+{t:7,q:"Which service gives personalised recommendations to improve reliability, security and cost?",o:["Azure Advisor","Service Health","Azure Monitor","Defender for Cloud"],a:0,e:"Advisor analyses your resources and recommends best practices across five pillars.",w:["","Service Health reports Azure incidents affecting you.","Monitor collects metrics and logs.","Defender focuses on security posture and threats."]}
+];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let S={st:{},miss:{},seen:[],custom:[]};
+try{const r=localStorage.getItem("sqb-az900");if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const save=()=>{try{localStorage.setItem("sqb-az900",JSON.stringify(S))}catch(e){}};
+const all=()=>BASE.concat(S.custom).map((q,i)=>({...q,id:i}));
+const stat=t=>S.st[t]||{a:0,c:0};
+const risk=t=>{const s=stat(t);return(s.a-s.c+1)/(s.a+2)};
+let cur=null,flt=-1,locked=false;
+
+/* OASIS: adaptive selection */
+function oasis(){
+ let L=all().filter(q=>(flt<0||q.t===flt)&&(!cur||q.id!==cur.id));
+ if(!L.length)L=all().filter(q=>flt<0||q.t===flt);
+ let best=null,bs=-1;
+ L.forEach(q=>{const sc=risk(q.t)+(S.miss[q.id]||0)*.3+(S.seen.includes(q.id)?0:.4)+Math.random()*.25;if(sc>bs){bs=sc;best=q}});
+ return best}
+function show(){
+ cur=oasis();locked=false;const q=cur;
+ $("#topic").textContent=T[q.t];$("#qtext").textContent=q.q;
+ $("#opts").innerHTML=q.o.map((o,i)=>`<button class="opt" data-i="${i}"><b>${"ABCD"[i]}</b><span>${esc(o)}</span></button>`).join("");
+ $("#fb").hidden=true;$("#next").hidden=true}
+/* PRIDE + TRACK */
+function answer(i){
+ if(locked)return;locked=true;const q=cur,ok=i===q.a;
+ const s=S.st[q.t]=S.st[q.t]||{a:0,c:0};s.a++;if(ok)s.c++;
+ if(!S.seen.includes(q.id))S.seen.push(q.id);
+ if(!ok)S.miss[q.id]=(S.miss[q.id]||0)+1;
+ save();
+ document.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;if(k===q.a)b.classList.add("right");else if(k===i)b.classList.add("wrong")});
+ const others=q.o.map((o,k)=>k!==q.a&&q.w&&q.w[k]?`<li><b>${"ABCD"[k]}${k===i?" (your pick)":""}:</b> ${esc(q.w[k])}</li>`:"").join("");
+ const f=$("#fb");f.className="fb "+(ok?"ok":"no");
+ f.innerHTML=`<h3>${ok?"Correct ✔":"Not quite ✘"}</h3><div><b>Why ${"ABCD"[q.a]} is right:</b> ${esc(q.e)}</div>${others?`<ul>${others}</ul>`:""}<p class="hint" style="margin:10px 0 0">Verify in Microsoft Learn: AZ-900 study guide.</p>`;
+ f.hidden=false;$("#next").hidden=false}
+/* TRACK, RANK, TRAIL, HUNT, HORIZON */
+function dash(){
+ let A=0,C=0;T.forEach((_,i)=>{A+=stat(i).a;C+=stat(i).c});
+ $("#tot").innerHTML=`<div class="stat"><b>${A}</b><span>answered</span></div><div class="stat"><b>${A?Math.round(C/A*100):0}%</b><span>accuracy</span></div><div class="stat"><b>${all().length}</b><span>questions</span></div>`;
+ const rk=T.map((t,i)=>({t,i,s:stat(i),r:risk(i)})).sort((a,b)=>b.r-a.r);
+ $("#trail").innerHTML=rk.map((x,k)=>{const m=x.s.a?Math.round(x.s.c/x.s.a*100):0;return`<div class="trail"><span class="n">${k+1}</span><div><div>${x.t} <span class="hint">· ${x.s.a?x.s.c+"/"+x.s.a+" correct":"not started"}</span></div><div class="bar"><i style="width:${m}%"></i></div></div><span class="hint">${x.s.a?m+"%":"–"}</span></div>`}).join("");
+ const hs=all().filter(q=>S.miss[q.id]).sort((a,b)=>S.miss[b.id]-S.miss[a.id]).slice(0,5);
+ $("#hunt").innerHTML=hs.length?hs.map(q=>`<p style="margin:8px 0"><span class="chip">${T[q.t]}</span> missed ${S.miss[q.id]}×<br>${esc(q.q)}</p>`).join(""):'<p class="hint">No misses yet. Misconceptions will appear here.</p>';
+ let h;
+ if(A<8)h="Answer at least 8 questions to unlock a reliable forecast.";
+ else{const acc=C/A;if(acc>=.7)h=`You are at ${Math.round(acc*100)}%, above the 70% mark. Keep practising ${rk[0].t} to stay ahead.`;
+ else{const n=Math.ceil((.7*A-C)/.3);h=`You are at ${Math.round(acc*100)}%. About ${n} more correct answers in a row would lift you past 70%. Start with ${rk[0].t}.`}}
+ $("#hz").innerHTML=`<p>${h}</p>`}
+/* Wiring */
+const opts=T.map((t,i)=>`<option value="${i}">${t}</option>`).join("");
+$("#flt").innerHTML='<option value="-1">All topics</option>'+opts;
+$("#flt").onchange=e=>{flt=+e.target.value;cur=null;show()};
+$("#opts").onclick=e=>{const b=e.target.closest(".opt");if(b)answer(+b.dataset.i)};
+$("#next").onclick=show;
+$("#reset").onclick=()=>{S={st:{},miss:{},seen:[],custom:S.custom};save();dash()};
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===b));
+ ["quiz","dash"].forEach(v=>$("#"+v).hidden=v!==b.dataset.v);
+ if(b.dataset.v==="dash")dash()});
+show();
+</script></body></html>
